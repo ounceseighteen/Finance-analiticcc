@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История операций</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📋 История операций</h1>
+
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Главная</a>
+            <a href="{{ url_for('add_transaction') }}">Добавить</a>
+            <a href="{{ url_for('history') }}" class="active">История</a>
+        </div>
+
+        {% if transactions %}
+        <div class="card">
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Категория</th>
+                        <th>Описание</th>
+                        <th>Сумма</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr class="transaction-{{ t.type }}">
+                        <td>{{ t.date }}</td>
+                        <td>{{ t.category }}</td>
+                        <td>{{ t.description or '-' }}</td>
+                        <td class="amount {% if t.type == 'income' %}positive{% else %}negative{% endif %}">
+                            {% if t.type == 'income' %}+{% else %}-{% endif %}{{ "%.2f"|format(t.amount) }} ₽
+                        </td>
+                        <td>
+                            <a href="{{ url_for('delete_transaction', transaction_id=t.id) }}"
+                               class="delete-link"
+                               onclick="return confirm('Удалить эту операцию?')">
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card">
+            <p style="text-align: center; color: #666;">Пока нет операций</p>
+        </div>
+        {% endif %}
+
+        <div class="quick-actions">
+            <a href="{{ url_for('add_transaction') }}" class="btn-primary">➕ Добавить операцию</a>
+            <a href="{{ url_for('index') }}" class="btn-secondary">← На главную</a>
+        </div>
+    </div>
+</body>
+</html>

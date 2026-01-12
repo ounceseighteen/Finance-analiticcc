@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учёт финансов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Учёт финансов</h1>
+
+        <!-- Навигация (как у вас) -->
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}" class="active">Главная</a>
+            <a href="{{ url_for('add_transaction') }}">Добавить операцию</a>
+            <a href="{{ url_for('history') }}">История</a>
+        </div>
+
+        <!-- Карточки баланса -->
+        <div class="balance-cards">
+            <div class="card balance-card">
+                <h3>Баланс</h3>
+                <div class="amount {% if balance >= 0 %}positive{% else %}negative{% endif %}">
+                    {{ "%.2f"|format(balance) }} ₽
+                </div>
+            </div>
+
+            <div class="card income-card">
+                <h3>Доходы</h3>
+                <div class="amount positive">+{{ "%.2f"|format(income) }} ₽</div>
+            </div>
+
+            <div class="card expense-card">
+                <h3>Расходы</h3>
+                <div class="amount negative">-{{ "%.2f"|format(expense) }} ₽</div>
+            </div>
+        </div>
+
+        <!-- Простой график -->
+        <div class="card">
+            <h3>Расходы по категориям</h3>
+            <div class="chart">
+                {% for item in chart_data %}
+                <div class="chart-item">
+                    <div class="category">{{ item.category }}</div>
+                    <div class="bar-container">
+                        <div class="bar" style="width: {{ (item.total / expense * 100) if expense > 0 else 0 }}%"></div>
+                    </div>
+                    <div class="amount">{{ "%.2f"|format(item.total) }} ₽</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="quick-actions">
+            <a href="{{ url_for('add_transaction') }}" class="btn-primary">
+                ➕ Добавить операцию
+            </a>
+            <a href="{{ url_for('history') }}" class="btn-secondary">
+                📋 Посмотреть историю
+            </a>
+        </div>
+    </div>
+</body>
+</html>
