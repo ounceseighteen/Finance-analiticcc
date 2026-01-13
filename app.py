@@ -426,6 +426,6 @@ def init_and_update_balances():
 
 
 if __name__ == '__main__':
+    init_and_update_balances()
     port = int(os.environ.get('PORT', 3000))
-    init_and_update_balances()  # Теперь это внутри контекста приложения
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
