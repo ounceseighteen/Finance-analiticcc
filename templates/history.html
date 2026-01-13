@@ -14,6 +14,7 @@
             <a href="{{ url_for('index') }}">Главная</a>
             <a href="{{ url_for('add_transaction') }}">Добавить</a>
             <a href="{{ url_for('history') }}" class="active">История</a>
+            <a href="{{ url_for('import_export') }}">Импорт/Экспорт</a>
         </div>
 
         {% if transactions %}
@@ -25,17 +26,28 @@
                         <th>Категория</th>
                         <th>Описание</th>
                         <th>Сумма</th>
+                        <th>Баланс после</th>
                         <th>Действие</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for t in transactions %}
                     <tr class="transaction-{{ t.type }}">
-                        <td>{{ t.date }}</td>
+                        <td>
+                            {% set date_parts = t.date.split('-') %}
+                            {% if date_parts|length == 3 %}
+                                {{ date_parts[2] }}.{{ date_parts[1] }}.{{ date_parts[0] }}
+                            {% else %}
+                                {{ t.date }}
+                            {% endif %}
+                        </td>
                         <td>{{ t.category }}</td>
                         <td>{{ t.description or '-' }}</td>
                         <td class="amount {% if t.type == 'income' %}positive{% else %}negative{% endif %}">
-                            {% if t.type == 'income' %}+{% else %}-{% endif %}{{ "%.2f"|format(t.amount) }} ₽
+                            {{ t.sign }}{{ "%.2f"|format(t.amount) }} ₽
+                        </td>
+                        <td class="amount {% if t.balance_after >= 0 %}positive{% else %}negative{% endif %}">
+                            {{ "%.2f"|format(t.balance_after) }} ₽
                         </td>
                         <td>
                             <a href="{{ url_for('delete_transaction', transaction_id=t.id) }}"
@@ -54,11 +66,6 @@
             <p style="text-align: center; color: #666;">Пока нет операций</p>
         </div>
         {% endif %}
-
-        <div class="quick-actions">
-            <a href="{{ url_for('add_transaction') }}" class="btn-primary">➕ Добавить операцию</a>
-            <a href="{{ url_for('index') }}" class="btn-secondary">← На главную</a>
-        </div>
     </div>
 </body>
 </html>
